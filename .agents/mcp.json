@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "sql-auditor": {
+      "command": "c:\\Users\\Usuario\\Documents\\SMART REASONS\\mcp-puntoventacrt\\venv\\Scripts\\python.exe",
+      "args": [
+        "c:\\Users\\Usuario\\Documents\\SMART REASONS\\mcp-puntoventacrt\\server.py"
+      ]
+    }
+  }
+}
