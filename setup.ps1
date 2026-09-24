@@ -57,7 +57,8 @@ if ($targetConfigPath) {
             $jsonContent = Get-Content $targetConfigPath -Raw
             if ([string]::IsNullOrWhiteSpace($jsonContent)) { $jsonContent = "{}" }
             $config = $jsonContent | ConvertFrom-Json -AsHashtable
-        } catch {
+        }
+        catch {
             Write-Host "[ADVERTENCIA] No se pudo leer el archivo de config de Claude. Se sobrescribira." -ForegroundColor Yellow
         }
     }
@@ -67,15 +68,16 @@ if ($targetConfigPath) {
     }
     
     $mcpServers = $config["mcpServers"]
-    $mcpServers["sql-auditor"] = @{
+    $mcpServers["sql-dba-assistant-crt"] = @{
         "command" = $pythonExe.Replace('\', '\\')
-        "args" = @($serverPy.Replace('\', '\\'))
+        "args"    = @($serverPy.Replace('\', '\\'))
     }
     
     # Escribir el json de vuelta
     $config | ConvertTo-Json -Depth 10 | Set-Content "$targetConfigPath"
     Write-Host "[EXITO] Claude configurado correctamente en: $targetConfigPath" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "[ADVERTENCIA] No se encontro la instalacion de Claude Desktop. Tendras que configurarlo en n8n manualmente." -ForegroundColor Yellow
 }
 
