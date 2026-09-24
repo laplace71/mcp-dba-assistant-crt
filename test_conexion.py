@@ -1,4 +1,6 @@
-import server
+import src.config  # Asegura cargar .env
+from src.database import obtener_conexion_dinamica
+from src.tools import obtener_definicion_sp, ejecutar_consulta_segura, listar_stored_procedures
 import json
 
 def probar():
@@ -6,7 +8,7 @@ def probar():
         print("Intentando conectar a la base de datos 'msdb' de forma dinámica usando el .env...")
         base_datos_prueba = "msdb"
         
-        conn = server.obtener_conexion_dinamica(base_datos_prueba, servidor="PuntoVenta")
+        conn = obtener_conexion_dinamica(base_datos_prueba, servidor="PuntoVenta")
         print("[OK] ¡Conexión exitosa a la base de datos!")
         
         print("\nProbando consulta de Stored Procedures...")
@@ -29,7 +31,7 @@ def probar():
             print(f"Intentando obtener el código fuente de: '{primer_sp}' en {base_datos_prueba}...")
             
             # Simulamos lo que haría la IA llamando a la herramienta, pasando ahora base_datos
-            resultado_sp = server.obtener_definicion_sp(base_datos_prueba, primer_sp)
+            resultado_sp = obtener_definicion_sp(base_datos_prueba, primer_sp)
             
             if resultado_sp["status"] == "success":
                 codigo_sp = resultado_sp["definition"]
@@ -44,7 +46,7 @@ def probar():
         print("\n--- PRUEBA 2: CONSULTA SEGURA (NUEVA HERRAMIENTA) ---")
         query_valida = "SELECT TOP 5 name, object_id FROM sys.tables"
         print(f"Enviando consulta: '{query_valida}'...")
-        resultado_seguro = server.ejecutar_consulta_segura(base_datos_prueba, query_valida)
+        resultado_seguro = ejecutar_consulta_segura(base_datos_prueba, query_valida)
         if resultado_seguro["status"] == "success":
             print(f"[OK] Consulta exitosa. Filas obtenidas: {resultado_seguro['count']}")
             print(json.dumps(resultado_seguro["rows"], indent=2))
@@ -54,7 +56,7 @@ def probar():
         print("\n--- PRUEBA 3: ATAQUE DE INYECCIÓN (NUEVA HERRAMIENTA) ---")
         query_invalida = "DROP TABLE Usuarios; -- intento de ataque"
         print(f"Enviando ataque destructivo: '{query_invalida}'...")
-        resultado_ataque = server.ejecutar_consulta_segura(base_datos_prueba, query_invalida)
+        resultado_ataque = ejecutar_consulta_segura(base_datos_prueba, query_invalida)
         if resultado_ataque["status"] == "error":
             print(f"[OK BLOQUEADO] El muro de seguridad funcionó: {resultado_ataque['message']}")
         else:
@@ -66,7 +68,7 @@ def probar():
         servidor_elegido = "PV"
         print(f"Intentando listar Stored Procedures de '{base_duplicada}' en el servidor '{servidor_elegido}'...")
         try:
-            res_dup = server.listar_stored_procedures(base_duplicada, servidor_elegido)
+            res_dup = listar_stored_procedures(base_duplicada, servidor_elegido)
             if res_dup.get("status") == "success":
                 print(f"[OK] Se resolvió correctamente el mapeo de {base_duplicada} hacia {servidor_elegido}.")
             else:
